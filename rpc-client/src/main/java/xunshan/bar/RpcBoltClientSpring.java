@@ -8,9 +8,9 @@ import xunshan.foo.HelloService;
 
 @SpringBootApplication
 @ImportResource("classpath*:sofa-rpc-client-config.xml")
-public class ModuleBarApp {
+public class RpcBoltClientSpring {
     public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(ModuleBarApp.class);
+        SpringApplication app = new SpringApplication(RpcBoltClientSpring.class);
         ConfigurableApplicationContext ctx = app.run(args);
 
         HelloService helloServiceReference = (HelloService) ctx.getBean("helloServiceReference");

@@ -6,8 +6,8 @@ import org.springframework.context.annotation.ImportResource;
 
 @ImportResource({ "classpath*:sofa-rpc-config.xml" })
 @SpringBootApplication
-public class ModuleFooApp {
+public class RpcBoltServerSpring {
     public static void main(String[] args) {
-        SpringApplication.run(ModuleFooApp.class, args);
+        SpringApplication.run(RpcBoltServerSpring.class, args);
     }
 }
