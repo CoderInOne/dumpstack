@@ -2,7 +2,8 @@ package xunshan;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.api.ExistsBuilder;
+import org.apache.curator.framework.api.CuratorEvent;
+import org.apache.curator.framework.api.CuratorListener;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
@@ -147,6 +148,42 @@ public class ZookeeperTest {
                 .forPath(path);
 
         System.out.println("resp:" + resp);
+    }
+
+    @Test
+    public void znodeVersionUpdate() throws Exception {
+        final String path = ROOT + "/e";
+        client.create().creatingParentContainersIfNeeded()
+                .withMode(CreateMode.EPHEMERAL)
+                .forPath(path);
+
+        client.getCuratorListenable().addListener(new CuratorListener() {
+            @Override
+            public void eventReceived(CuratorFramework client, CuratorEvent event) throws Exception {
+                System.out.println("path:" + event.getPath() + ", version:" + event.getStat().getVersion());
+            }
+        });
+
+        final int cnt = 3;
+        final CountDownLatch latch = new CountDownLatch(cnt);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < cnt; i++) {
+                    try {
+                        client.setData().inBackground().forPath(path, String.valueOf(cnt).getBytes());
+
+                        Thread.sleep(300);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    latch.countDown();
+                }
+            }
+        }).start();
+
+        latch.await();
     }
 
     @After
