@@ -11,8 +11,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>module-foo</module>
-        <module>module-bar</module>
+        <module>rpc-client</module>
+        <module>rpc-server</module>
     </modules>
 
     <parent>
