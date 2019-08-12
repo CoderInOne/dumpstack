@@ -2,6 +2,7 @@ package xunshan;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.api.BackgroundCallback;
 import org.apache.curator.framework.api.CuratorEvent;
 import org.apache.curator.framework.api.CuratorListener;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
@@ -9,6 +10,8 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -164,13 +167,18 @@ public class ZookeeperTest {
             }
         });
 
-        final int cnt = 3;
+        changeData(path, 3);
+    }
+
+    private void changeData(final String path, final int cnt) throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(cnt);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 for (int i = 0; i < cnt; i++) {
                     try {
+                        System.out.println("updating " + path);
+
                         client.setData().inBackground().forPath(path, String.valueOf(cnt).getBytes());
 
                         Thread.sleep(300);
@@ -184,6 +192,36 @@ public class ZookeeperTest {
         }).start();
 
         latch.await();
+    }
+
+    @Test
+    public void watchNode() throws Exception {
+        String path = ROOT + "/f";
+
+        client.create().creatingParentContainersIfNeeded()
+                .withMode(CreateMode.EPHEMERAL)
+                .forPath(path);
+
+        client.getData()
+                .usingWatcher(new Watcher() {
+                    @Override
+                    public void process(WatchedEvent event) {
+                        System.out.println("path:" + event.getPath() + ", type:" + event.getType());
+                    }
+                })
+                .inBackground(new BackgroundCallback() {
+                    @Override
+                    public void processResult(CuratorFramework client, CuratorEvent event) throws Exception {
+                        System.out.println("path:" + event.getPath() +
+                                ", version:" + event.getStat().getVersion() +
+                                ", cxid:" + event.getStat().getCzxid() +
+                                ", dataLength:" + event.getStat().getDataLength()
+                        );
+                    }
+                })
+                .forPath(path);
+
+        changeData(path, 3);
     }
 
     @After
