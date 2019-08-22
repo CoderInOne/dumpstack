@@ -21,11 +21,45 @@
         <version>3.0.0</version>
     </parent>
 
+<<<<<<< HEAD
+=======
+    <properties>
+        <curator.version>2.9.1</curator.version>
+    </properties>
+
+>>>>>>> af101ce60d350a3a1ced1d89718f04e9dc459ef9
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+<<<<<<< HEAD
             <version>4.12</version>
+=======
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-client</artifactId>
+            <version>${curator.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>${curator.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>${curator.version}</version>
+>>>>>>> af101ce60d350a3a1ced1d89718f04e9dc459ef9
         </dependency>
     </dependencies>
 
